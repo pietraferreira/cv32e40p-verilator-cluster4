@@ -58,9 +58,11 @@ _start:
 	li a1, 0
 	li a2, 0
 
-	call main
+/* only the first hart will jump into main */
 	csrr t0, mhartid
 	bnez t0, .Lhart_park
+
+	call main
 	tail exit
 
 .Lhart_park:
