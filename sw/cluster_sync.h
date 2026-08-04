@@ -44,6 +44,12 @@ static inline uint32_t cl_read_mhartid(void) {
     return hart;
 }
 
+static inline uint32_t cl_read_mcycle(void) {
+    uint32_t cyc;
+    __asm__ volatile ("csrr %0, mcycle" : "=r"(cyc));
+    return cyc;
+}
+
 static inline void cl_fence(void) {
     __asm__ volatile ("fence rw, rw" ::: "memory");
 }

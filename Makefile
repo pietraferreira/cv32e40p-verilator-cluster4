@@ -31,7 +31,7 @@ FW_ELF := $(FW_BUILD_DIR)/$(APP).elf
 FW_HEX := $(FW_BUILD_DIR)/$(APP).hex
 FW_MAP := $(FW_BUILD_DIR)/$(APP).map
 
-BSP_SRCS := bsp/crt0.S bsp/handlers.S bsp/vectors.S bsp/syscalls.c
+BSP_SRCS := bsp/crt0.S bsp/handlers.S bsp/vectors.S bsp/syscalls.c bsp/startup_sync.c
 BSP_OBJS := $(addprefix $(FW_BUILD_DIR)/,$(notdir $(BSP_SRCS:.S=.o)))
 BSP_OBJS := $(BSP_OBJS:.c=.o)
 BSP_LIB := $(FW_BUILD_DIR)/libcv-verif.a

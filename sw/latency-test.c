@@ -21,12 +21,6 @@
 /* Place a small array in shared memory (.bss) for the shared-memory test. */
 static volatile uint32_t shared_buf[ITERS];
 
-static inline uint32_t read_mcycle(void) {
-    uint32_t cyc;
-    __asm__ volatile ("csrr %0, mcycle" : "=r"(cyc));
-    return cyc;
-}
-
 int main(void) {
     uint32_t hart = cl_read_mhartid();
 
@@ -42,24 +36,24 @@ int main(void) {
     cl_fence();
 
     /* ---- scratchpad loop ---- */
-    uint32_t t0 = read_mcycle();
+    uint32_t t0 = cl_read_mcycle();
     for (uint32_t i = 0; i < ITERS; i++) {
         spm[i] = i;
         uint32_t v = spm[i];
         (void)v;
     }
     cl_fence();
-    uint32_t t1 = read_mcycle();
+    uint32_t t1 = cl_read_mcycle();
 
     /* ---- shared-memory loop ---- */
-    uint32_t t2 = read_mcycle();
+    uint32_t t2 = cl_read_mcycle();
     for (uint32_t i = 0; i < ITERS; i++) {
         shared_buf[i] = i;
         uint32_t v = shared_buf[i];
         (void)v;
     }
     cl_fence();
-    uint32_t t3 = read_mcycle();
+    uint32_t t3 = cl_read_mcycle();
 
     uint32_t spm_cycles    = t1 - t0;
     uint32_t shared_cycles = t3 - t2;

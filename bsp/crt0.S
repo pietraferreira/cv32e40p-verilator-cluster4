@@ -36,6 +36,11 @@ _start:
 	ori a0, a0, 1 /*vector mode = vectored */
 	csrw mtvec, a0
 
+/* Only hart 0 runs the bss-clear and libc init; the other harts spin-wait until 
+it signals completion, then all harts call main. */
+	csrr t0, mhartid
+	bnez t0, .Lhart_wait_init
+
 /* clear the bss segment */
 	la a0, _edata
 	la a2, _end
@@ -48,6 +53,13 @@ _start:
 	call atexit
 	call __libc_init_array
 
+	call crt0_hart0_signal_ready
+	j .Lenter_main
+
+.Lhart_wait_init:
+	call crt0_wait_ready
+
+.Lenter_main:
 /* call main */
 //	lw a0, 0(sp)                    /* a0 = argc */
 //	addi a1, sp, __SIZEOF_POINTER__ /* a1 = argv */
@@ -58,11 +70,13 @@ _start:
 	li a1, 0
 	li a2, 0
 
-/* only the first hart will jump into main */
+	call main
+
+/* only hart 0 tears down the sim; others park (mirrors _exit's own
+ * hart-0-only EXIT_REG write in syscalls.c) */
 	csrr t0, mhartid
 	bnez t0, .Lhart_park
 
-	call main
 	tail exit
 
 .Lhart_park:
