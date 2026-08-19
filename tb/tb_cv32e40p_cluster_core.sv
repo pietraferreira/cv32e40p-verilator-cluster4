@@ -176,7 +176,8 @@ module tb_cv32e40p_cluster_core #(
     assign dma_cfg_len_valid = core_data_req && core_data_gnt && core_data_we && (core_data_addr == MMADDR_DMA_LEN);
 
     tb_core_dma_engine #(
-        .DMA_QUEUE_SLOTS(DMA_QUEUE_SLOTS)
+        .DMA_QUEUE_SLOTS(DMA_QUEUE_SLOTS),
+        .CORE_ID        (CORE_ID)
     ) dma_i (
         .clk_i         (clk_i),
         .rst_ni        (rst_ni),

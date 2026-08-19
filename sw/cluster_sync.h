@@ -50,6 +50,12 @@ static inline uint32_t cl_read_mcycle(void) {
     return cyc;
 }
 
+static inline uint32_t cl_read_minstret(void) {
+    uint32_t instr;
+    __asm__ volatile ("csrr %0, minstret" : "=r"(instr));
+    return instr;
+}
+
 static inline void cl_fence(void) {
     __asm__ volatile ("fence rw, rw" ::: "memory");
 }

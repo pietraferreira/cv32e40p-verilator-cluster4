@@ -59,6 +59,8 @@ CPP_TB_SRC := $(abspath tb/tb_top_verilator.cpp)
 SIM_EXE := $(VERI_OBJ_DIR)/Vtb_top_verilator
 
 MAXCYCLES ?= 20000000
+# Extra plusargs for the simulator, e.g. SIM_ARGS=+dma_trace or SIM_ARGS=+dma_debug
+SIM_ARGS ?=
 VERI_CFLAGS ?= -O2
 VERI_TRACE ?=
 
@@ -67,7 +69,7 @@ VERI_TRACE ?=
 all: run
 
 run: verilate firmware
-	$(SIM_EXE) +firmware=$(FW_HEX) +maxcycles=$(MAXCYCLES)
+	$(SIM_EXE) +firmware=$(FW_HEX) +maxcycles=$(MAXCYCLES) $(SIM_ARGS)
 
 firmware: $(FW_HEX)
 
