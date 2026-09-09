@@ -27,7 +27,7 @@ _start:
 /* initialize stack pointer */
 	la sp, __stack_end
 	csrr t0, mhartid
-	li t1, 0x400
+	li t1, 0x4000	/* 16KiB per hart -- 1KiB overflows into the next hart's stack */
 	mul t0, t0, t1
 	sub sp, sp, t0
 

@@ -27,6 +27,10 @@ VERI_BUILD_DIR := $(BUILD_DIR)/verilator
 VERI_OBJ_DIR := $(VERI_BUILD_DIR)/obj_dir
 
 APP ?= shared-memory-demo
+# Extra compiler flags for the app only, e.g. APP_CFLAGS=-DPASSES=1u.
+# Changing this does not invalidate an existing object file - delete
+# $(FW_BUILD_DIR)/$(APP).o (or `make clean`) when you change it.
+APP_CFLAGS ?=
 FW_ELF := $(FW_BUILD_DIR)/$(APP).elf
 FW_HEX := $(FW_BUILD_DIR)/$(APP).hex
 FW_MAP := $(FW_BUILD_DIR)/$(APP).map
@@ -93,7 +97,7 @@ $(FW_BUILD_DIR)/%.o: bsp/%.c | $(FW_BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(APP_OBJ): $(APP_SRC) sw/cluster_sync.h | $(FW_BUILD_DIR)
-	$(CC) $(CFLAGS) -I bsp -I sw -c $< -o $@
+	$(CC) $(CFLAGS) $(APP_CFLAGS) -I bsp -I sw -c $< -o $@
 
 verilate: $(SIM_EXE)
 
