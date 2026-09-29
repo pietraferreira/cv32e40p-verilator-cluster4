@@ -56,6 +56,13 @@ static inline uint32_t cl_read_minstret(void) {
     return instr;
 }
 
+/* Free-running cluster cycle counter in the testbench. */
+#define CL_TICKS_ADDR 0x15001004u
+
+static inline uint32_t cl_read_ticks(void) {
+    return *(volatile uint32_t *)CL_TICKS_ADDR;
+}
+
 static inline void cl_fence(void) {
     __asm__ volatile ("fence rw, rw" ::: "memory");
 }
