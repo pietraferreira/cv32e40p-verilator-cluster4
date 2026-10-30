@@ -1,0 +1,16 @@
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei  -I bsp -I sw -c sw/dispatch-demo.c -o build/fw/dispatch-demo.o
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei -nostartfiles -o build/fw/dispatch-demo.elf \
+	build/fw/dispatch-demo.o -T bsp/link.ld -Lbuild/fw -lcv-verif \
+	-Wl,-Map,build/fw/dispatch-demo.map -lc -lgcc
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530 warning: build/fw/dispatch-demo.elf has a LOAD segment with RWX permissions
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objcopy -O verilog build/fw/dispatch-demo.elf build/fw/dispatch-demo.hex
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-readelf -a build/fw/dispatch-demo.elf > build/fw/dispatch-demo.readelf
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objdump -d -M no-aliases -M numeric -S build/fw/dispatch-demo.elf > build/fw/dispatch-demo.objdump
+build/verilator/obj_dir/Vtb_top_verilator +firmware=build/fw/dispatch-demo.hex +maxcycles=20000000 
+[TB] loading shared firmware image: build/fw/dispatch-demo.hex
+dispatch round trip = 1192 cycles (empty kernel, 4 cores)
+team barrier        = 471 cycles
+sum=98688 expected=98688
+DISPATCH DEMO PASS
+[TB] CLUSTER EXIT SUCCESS
+- tb/tb_top_verilator.sv:53: Verilog $finish

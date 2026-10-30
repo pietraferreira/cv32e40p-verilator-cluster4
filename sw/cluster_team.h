@@ -1,20 +1,23 @@
 // SPDX-FileCopyrightText: 2026 emmtrix Technologies GmbH
+// SPDX-FileCopyrightText: 2026 Embecosm Limited
 // SPDX-License-Identifier: Apache-2.0
 
 /*
+ * cluster_team.h - running work across the four cores of the cluster.
+ *
  *   - All four harts enter main() together (bsp/crt0.S).
  *   - Hart 0 returning from main() ends the simulation for everyone, so every
  *     parallel region must be joined before it returns.
- *   - The only hardware sync is event-unit barrier 0, which every core in the
- *     cluster must enter. Everything below is built on it.
+ *   - The only hardware sync is event-unit barrier 0. Everything below uses
+ *     it with all four cores in its mask.
  *
  * Two ways to run work across the cores:
  *
- *   1. SPMD     - every hart runs the same code over its own slice.
- *                 `cl_range_split()`, then `cl_team_barrier()`.
- *   2. Dispatch - one primary hart drives workers parked in
- *                 `cl_team_worker_loop()`. `cl_team_dispatch()`
- *                 `cl_team_join()`. This is the shape IREE wants.
+ *   1. SPMD     - every hart runs the same code over its own slice:
+ *                 cl_range_split(), then cl_team_barrier().
+ *   2. Dispatch - hart 0 hands a function to workers waiting in
+ *                 cl_team_worker_loop(): cl_team_dispatch(), then
+ *                 cl_team_join(). This is the shape IREE needs.
  */
 
 #ifndef CLUSTER_TEAM_H
@@ -47,7 +50,8 @@ typedef struct {
     uint32_t end; /* exclusive */
 } cl_range_t;
 
- // Split [0, n) into `ncores` contiguous slices and return this core's.
+/* Split [0, n) into ncores contiguous slices and return this core's. The
+ * first n % ncores slices are one longer, so lengths differ by at most one. */
 static inline cl_range_t cl_range_split(uint32_t n, uint32_t core,
                                         uint32_t ncores) {
     cl_range_t r;
@@ -103,7 +107,7 @@ static inline void cl_team_dispatch(cl_dispatch_t *d, cl_task_fn_t fn,
 
 static inline void cl_team_join(cl_dispatch_t *d) { cl_team_barrier(&d->team); }
 
-// Primary: release the workers to return from cl_team_worker_loop().
+// Hart 0: make the workers return from cl_team_worker_loop().
 static inline void cl_team_shutdown(cl_dispatch_t *d) {
     d->fn = 0;
     cl_fence();

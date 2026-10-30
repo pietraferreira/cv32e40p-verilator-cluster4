@@ -1,0 +1,22 @@
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei  -I bsp -I sw -c sw/scaling-bench.c -o build/fw/scaling-bench.o
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei -nostartfiles -o build/fw/scaling-bench.elf \
+	build/fw/scaling-bench.o -T bsp/link.ld -Lbuild/fw -lcv-verif \
+	-Wl,-Map,build/fw/scaling-bench.map -lc -lgcc
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530 warning: build/fw/scaling-bench.elf has a LOAD segment with RWX permissions
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objcopy -O verilog build/fw/scaling-bench.elf build/fw/scaling-bench.hex
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-readelf -a build/fw/scaling-bench.elf > build/fw/scaling-bench.readelf
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objdump -d -M no-aliases -M numeric -S build/fw/scaling-bench.elf > build/fw/scaling-bench.objdump
+build/verilator/obj_dir/Vtb_top_verilator +firmware=build/fw/scaling-bench.hex +maxcycles=20000000 
+[TB] loading shared firmware image: build/fw/scaling-bench.hex
+workload cores   cycles  speed-up%
+compute      1   320439       100
+compute      2   240391       133
+compute      3   240464       133
+compute      4   240549       133
+memory       1   508392       100
+memory       2   360976       140
+memory       3   361025       140
+memory       4   361066       140
+SCALING BENCH PASS
+[TB] CLUSTER EXIT SUCCESS
+- tb/tb_top_verilator.sv:53: Verilog $finish

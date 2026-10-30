@@ -1,0 +1,15 @@
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei  -I bsp -I sw -c sw/subteam-barrier-test.c -o build/fw/subteam-barrier-test.o
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei -nostartfiles -o build/fw/subteam-barrier-test.elf \
+	build/fw/subteam-barrier-test.o -T bsp/link.ld -Lbuild/fw -lcv-verif \
+	-Wl,-Map,build/fw/subteam-barrier-test.map -lc -lgcc
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530 warning: build/fw/subteam-barrier-test.elf has a LOAD segment with RWX permissions
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objcopy -O verilog build/fw/subteam-barrier-test.elf build/fw/subteam-barrier-test.hex
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-readelf -a build/fw/subteam-barrier-test.elf > build/fw/subteam-barrier-test.readelf
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objdump -d -M no-aliases -M numeric -S build/fw/subteam-barrier-test.elf > build/fw/subteam-barrier-test.objdump
+build/verilator/obj_dir/Vtb_top_verilator +firmware=build/fw/subteam-barrier-test.hex +maxcycles=20000000 
+[TB] loading shared firmware image: build/fw/subteam-barrier-test.hex
+core 1 arrived 157124 cycles after core 0
+core 0 was held for 157410 cycles, core 1 for 308
+SUBTEAM BARRIER TEST PASS
+[TB] CLUSTER EXIT SUCCESS
+- tb/tb_top_verilator.sv:53: Verilog $finish

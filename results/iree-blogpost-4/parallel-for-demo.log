@@ -1,0 +1,18 @@
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei  -I bsp -I sw -c sw/parallel-for-demo.c -o build/fw/parallel-for-demo.o
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-gcc -Os -g -Wall -pedantic -mabi=ilp32 -march=rv32imc_zicsr_zifencei -nostartfiles -o build/fw/parallel-for-demo.elf \
+	build/fw/parallel-for-demo.o -T bsp/link.ld -Lbuild/fw -lcv-verif \
+	-Wl,-Map,build/fw/parallel-for-demo.map -lc -lgcc
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530 warning: build/fw/parallel-for-demo.elf has a LOAD segment with RWX permissions
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objcopy -O verilog build/fw/parallel-for-demo.elf build/fw/parallel-for-demo.hex
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-readelf -a build/fw/parallel-for-demo.elf > build/fw/parallel-for-demo.readelf
+~/iree-bare-metal/corev-openhw-gcc-ubuntu2204-20240530/bin/riscv32-corev-elf-objdump -d -M no-aliases -M numeric -S build/fw/parallel-for-demo.elf > build/fw/parallel-for-demo.objdump
+build/verilator/obj_dir/Vtb_top_verilator +firmware=build/fw/parallel-for-demo.hex +maxcycles=20000000 
+[TB] loading shared firmware image: build/fw/parallel-for-demo.hex
+  core 0: [0, 26) len=26
+  core 1: [26, 51) len=25
+  core 2: [51, 76) len=25
+  core 3: [76, 101) len=25
+n=101 cores=4 imbalance=1 iteration(s)
+PARALLEL FOR DEMO PASS
+[TB] CLUSTER EXIT SUCCESS
+- tb/tb_top_verilator.sv:53: Verilog $finish

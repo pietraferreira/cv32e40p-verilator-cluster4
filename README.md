@@ -54,6 +54,10 @@ This behavior is documented in CV32E40P sleep docs:
 - `make APP=tiled-matmul-demo run` : tiled matrix multiplication demo
 - `make APP=dma-demo run` : DMA memcpy demo (128-element copy and verify)
 - `make APP=barrier-skew-demo run MAXCYCLES=20000000` : barrier stress test with one slow hart and other fast harts
+- `make APP=parallel-for-demo run` : split a 101-element loop evenly across the four cores
+- `make APP=dispatch-demo run` : hand work to parked worker cores and wait for it; times one dispatch and one barrier
+- `make APP=subteam-barrier-test run` : a barrier over cores 0 and 1 only
+- `make APP=scaling-bench run` : the same work on 1, 2, 3 and 4 cores
 - `make verilate` : compile RTL/testbench with Verilator
 - `make run MAXCYCLES=5000000` : run with a custom cycle limit
 - `make clean` : remove build artifacts
